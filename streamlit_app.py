@@ -121,11 +121,11 @@ def score_function_fuzz(ocr_name, full_name_list):
 ##
 
 # reading in election data
-voter_records_2023_df = pd.read_csv('raw_feb_23_city_wide.csv', dtype=str)
+#voter_records_2023_df = pd.read_csv('raw_feb_23_city_wide.csv', dtype=str)
 
 # creating full name column
-voter_records_2023_df['Full Name'] = voter_records_2023_df.apply(lambda x: f"{x['First_Name']} {x['Last_Name']}", axis=1)
-full_name_list = list(voter_records_2023_df['Full Name'])
+#voter_records_2023_df['Full Name'] = voter_records_2023_df.apply(lambda x: f"{x['First_Name']} {x['Last_Name']}", axis=1)
+#full_name_list = list(voter_records_2023_df['Full Name'])
 
 
 ##
@@ -137,10 +137,21 @@ full_name_list = list(voter_records_2023_df['Full Name'])
 with st.sidebar:
     st.write("# Ballot Initiative Project")
 
+# Input field for the OpenAI API key
+OPENAI_API_KEY = st.text_input("1. Enter your OpenAI API Key", type="password")
+
+# Check if the API key is provided
+if OPENAI_API_KEY:
+    st.success("API Key received.")
+    # You can now use the API key in your OpenAI API calls
+    # For example, you might pass this key to an OpenAI API function
+else:
+    st.warning("Please enter your OpenAI API Key.")
+
 ## File Upload
 ## need to run streamlit run main_app/app.py --server.enableXsrfProtection false
 ## (From https://discuss.streamlit.io/t/file-upload-error-axioserror-request-failed-with-status-code-500/48169/19?u=mobolaji)
-uploaded_file = st.file_uploader("Choose a file")
+uploaded_file = st.file_uploader("2. Choose a ballot file")
 
 images = None
 if uploaded_file is not None:
@@ -171,6 +182,18 @@ if uploaded_file is not None:
 # reducing images length for testing purposes
 if images:
     images = images[:5]
+
+# File uploader for CSV
+uploaded_csv = st.file_uploader("3. Choose a CSV file", type="csv")
+
+# Process CSV if uploaded
+if uploaded_csv is not None:
+    voter_records_2023_df = pd.read_csv(uploaded_csv, dtype=str)
+
+    # creating full name column
+    voter_records_2023_df['Full Name'] = voter_records_2023_df.apply(lambda x: f"{x['First_Name']} {x['Last_Name']}", axis=1)
+    full_name_list = list(voter_records_2023_df['Full Name'])
+
 
 # sidebar button for removing images
 with st.sidebar:
